@@ -19,8 +19,8 @@ class FilterWheel:
         self.stepper.setAcceleration(20000)
         self.stepper.setCurrentLimit(0.9)
 
-        self.SerialPort = serial.Serial(self.SerialPortAddress, 9600, timeout = 2)
         self.SerialPortAddress = '/dev/ttyACM0'
+        self.SerialPort = serial.Serial(self.SerialPortAddress, 9600, timeout = 2)
         
         print("Filterwheel connection successful.")
 
