@@ -1,18 +1,19 @@
 #!/usr/bin/python3
 
-from FilterWheel import *
 from twisted.internet import protocol, reactor, threads
 from twisted.protocols import basic
 
+from .filter_wheel import *
+
 # Port for filterwheel is 5503
 
-class TelescopeServer(basic.LineReceiver):
+class FilterWheelServer(basic.LineReceiver):
     def __init__(self):
         'Creates a filterwheel motor.'
         self.fw = FilterWheel()
 
     def connectionMade(self):
-        '''Opens communication with Evora. If more than one line is sent, the callback 
+        '''Opens communication with Evora. If more than one line is sent, the callback
         to start the gui will fail.'''
         self.factory.clients.append(self)
 
@@ -32,12 +33,12 @@ class TelescopeServer(basic.LineReceiver):
         if data is not None:
             for client in self.factory.clients:
                 client.sendLine(str(data))
-                
+
     def parse(self, message = None):
         '''Parses a message and returns a message to be sent back to Evora, which
         expects specific return messages.'''
         message = message.split()
-        
+
         if message[0] == 'home':
     	    return self.fw.home()
         if message[0] == 'move':
@@ -45,14 +46,14 @@ class TelescopeServer(basic.LineReceiver):
         if message[0] == 'getFilter':
             return 'getFilter ' + self.fw.getFilterPos()
 
-class TelescopeClient(protocol.ServerFactory):
-    protocol = TelescopeServer
+class FilterWheelClient(protocol.ServerFactory):
+    protocol = FilterWheelServer
     clients = []
-        
+
 if __name__ == "__main__":
     print("You have started the MRO Telescope Server!\n \
           You should now connect a client session to get started.")
 
     reactor.suggestThreadPoolSize(30)
-    reactor.listenTCP(5503, TelescopeClient())
+    reactor.listenTCP(5503, FilterWheelClient())
     reactor.run()
