@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
 import serial
-from Phidget22.Devices.Stepper import *
-from Phidget22.Phidget import *
+from Phidget22.Devices.Stepper import Stepper, StepperControlMode
 
 
 class FilterWheel:
     def __init__(self):
-        'Sets up internal variables and initializes the stepper and serial port.'
+        "Sets up internal variables and initializes the stepper and serial port."
         self._VELOCITY_LIMIT = 5000
         self._filterPos = None
         self._hallData = None
@@ -19,13 +18,13 @@ class FilterWheel:
         self.stepper.setAcceleration(20000)
         self.stepper.setCurrentLimit(0.9)
 
-        self.SerialPortAddress = '/dev/ttyACM0'
-        self.SerialPort = serial.Serial(self.SerialPortAddress, 9600, timeout = 2)
+        self.SerialPortAddress = "/dev/ttyACM0"
+        self.SerialPort = serial.Serial(self.SerialPortAddress, 9600, timeout=2)
 
         print("Filterwheel connection successful.")
 
     def disconnDev(self):
-        'Disconnects the stepper and serial port.'
+        "Disconnects the stepper and serial port."
         self.stepper.setVelocityLimit(0)
         self.stepper.setEngaged(False)
         self.stepper.close()
@@ -34,18 +33,18 @@ class FilterWheel:
         return
 
     def getHallData(self, index):
-        '''Gets the Hall sensor data and returns the sensor value at the index.
-        Indices 0 and 1 store if a magnet is detected (0 returned) or not (1).'''
-        self.SerialPort.write('s')
-        self._hallData = self.SerialPort.readline().rstrip('\r\n').split(',')
+        """Gets the Hall sensor data and returns the sensor value at the index.
+        Indices 0 and 1 store if a magnet is detected (0 returned) or not (1)."""
+        self.SerialPort.write("s")
+        self._hallData = self.SerialPort.readline().rstrip("\r\n").split(",")
         return int(self._hallData[index])
 
     def getFilterPos(self):
-        'Returns the position of the filterwheel, an integer between 0 and 5.'
+        "Returns the position of the filterwheel, an integer between 0 and 5."
         return str(self._filterPos)
 
     def home(self):
-        'Homes the filter wheel to position 0.'
+        "Homes the filter wheel to position 0."
         self.stepper.setEngaged(True)
         self.stepper.setVelocityLimit(self._VELOCITY_LIMIT)
 
@@ -58,10 +57,10 @@ class FilterWheel:
         self.stepper.setEngaged(False)
 
         print("Homed")
-        return 'home 1'
+        return "home 1"
 
     def moveFilter(self, num):
-        'Moves the filter to the specified position, an integer between 0 and 5.'
+        "Moves the filter to the specified position, an integer between 0 and 5."
         self.stepper.setEngaged(True)
         self.stepper.setVelocityLimit(self._VELOCITY_LIMIT)
 
@@ -88,4 +87,4 @@ class FilterWheel:
         self.stepper.setEngaged(False)
 
         print("At filter position %d." % num)
-        return 'True'
+        return "True"
